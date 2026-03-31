@@ -1,0 +1,81 @@
+{
+  "league": {
+    "name": "Warhammer The Old World League",
+    "season": 1,
+    "updated": "2026-03-31"
+  },
+  "players": [
+    {
+      "id": "rich",
+      "name": "Rich",
+      "army": "Wolves of the Sea",
+      "wins": 5,
+      "draws": 1,
+      "losses": 2,
+      "victoryPointsFor": 89,
+      "victoryPointsAgainst": 45,
+      "victoryPointDiff": 44,
+      "totalTournamentPoints": 67
+    },
+    {
+      "id": "hector",
+      "name": "Hector",
+      "army": "Vampire Counts",
+      "wins": 6,
+      "draws": 0,
+      "losses": 2,
+      "victoryPointsFor": 94,
+      "victoryPointsAgainst": 40,
+      "victoryPointDiff": 54,
+      "totalTournamentPoints": 72
+    },
+    {
+      "id": "phil",
+      "name": "Phil",
+      "army": "Grand Cathay",
+      "wins": 4,
+      "draws": 2,
+      "losses": 2,
+      "victoryPointsFor": 76,
+      "victoryPointsAgainst": 38,
+      "victoryPointDiff": 38,
+      "totalTournamentPoints": 58
+    },
+    {
+      "id": "james",
+      "name": "James",
+      "army": "Minotour Herd",
+      "wins": 3,
+      "draws": 1,
+      "losses": 4,
+      "victoryPointsFor": 62,
+      "victoryPointsAgainst": 56,
+      "victoryPointDiff": 6,
+      "totalTournamentPoints": 45
+    },
+    {
+      "id": "swindon",
+      "name": "Swindon",
+      "army": "Exiles",
+      "wins": 2,
+      "draws": 2,
+      "losses": 4,
+      "victoryPointsFor": 48,
+      "victoryPointsAgainst": 68,
+      "victoryPointDiff": -20,
+      "totalTournamentPoints": 32
+    },
+    {
+      "id": "wnareik",
+      "name": "Wnareik",
+      "army": "Kingom of Bretonia",
+      "wins": 4,
+      "draws": 1,
+      "losses": 3,
+      "victoryPointsFor": 71,
+      "victoryPointsAgainst": 52,
+      "victoryPointDiff": 19,
+      "totalTournamentPoints": 53
+    }
+  ]
+}
