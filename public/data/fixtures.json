@@ -1,6 +1,6 @@
 {
   "league": {
-    "name": "Warhammer The Old World League",
+    "name": "The League of Old World Gentlemen",
     "season": 1,
     "updated": "2026-03-31"
   },
@@ -41,109 +41,93 @@
       "id": "match_001",
       "player1Id": "rich",
       "player2Id": "hector",
-      "player1VP": 950,
-      "player2VP": 1050,
+      "player1VP": 1900,
+      "player2VP": 639,
       "played": true
     },
     {
       "id": "match_002",
       "player1Id": "rich",
-      "player2Id": "phil",
-      "player1VP": 1200,
-      "player2VP": 600,
+      "player2Id": "james",
+      "player1VP": 755,
+      "player2VP": 470,
       "played": true
     },
     {
       "id": "match_003",
-      "player1Id": "hector",
+      "player1Id": "rich",
       "player2Id": "phil",
-      "player1VP": 1100,
-      "player2VP": 700,
-      "played": true
+      "played": false
     },
     {
       "id": "match_004",
-      "player1Id": "james",
+      "player1Id": "rich",
       "player2Id": "swindon",
-      "player1VP": 800,
-      "player2VP": 500,
-      "played": true
+      "played": false
     },
     {
       "id": "match_005",
-      "player1Id": "wnareik",
-      "player2Id": "swindon",
-      "player1VP": 950,
-      "player2VP": 650,
-      "played": true
+      "player1Id": "rich",
+      "player2Id": "wnareik",
+      "played": false
     },
     {
       "id": "match_006",
-      "player1Id": "rich",
-      "player2Id": "james",
-      "player1VP": 1050,
-      "player2VP": 600,
-      "played": true
+      "player1Id": "hector",
+      "player2Id": "phil",
+      "played": false
     },
     {
       "id": "match_007",
       "player1Id": "hector",
       "player2Id": "james",
-      "player1VP": 1150,
-      "player2VP": 500,
-      "played": true
+      "played": false
     },
     {
       "id": "match_008",
-      "player1Id": "phil",
-      "player2Id": "wnareik",
-      "player1VP": 800,
-      "player2VP": 900,
-      "played": true
+      "player1Id": "hector",
+      "player2Id": "swindon",
+      "played": false
     },
     {
       "id": "match_009",
-      "player1Id": "rich",
-      "player2Id": "swindon",
-      "player1VP": 950,
-      "player2VP": 400,
-      "played": true
+      "player1Id": "hector",
+      "player2Id": "wnareik",
+      "played": false
     },
     {
       "id": "match_010",
-      "player1Id": "hector",
-      "player2Id": "wnareik",
-      "player1VP": 1000,
-      "player2VP": 650,
-      "played": true
-    },
-    {
-      "id": "match_011",
       "player1Id": "phil",
       "player2Id": "james",
       "played": false
     },
     {
-      "id": "match_012",
+      "id": "match_011",
       "player1Id": "phil",
       "player2Id": "swindon",
       "played": false
     },
     {
-      "id": "match_013",
-      "player1Id": "rich",
+      "id": "match_012",
+      "player1Id": "phil",
       "player2Id": "wnareik",
       "played": false
     },
     {
-      "id": "match_014",
-      "player1Id": "hector",
+      "id": "match_013",
+      "player1Id": "james",
       "player2Id": "swindon",
       "played": false
     },
     {
-      "id": "match_015",
+      "id": "match_014",
       "player1Id": "james",
+      "player2Id": "wnareik",
+      "played": false
+    },
+    {
+      "id": "match_015",
+      "player1Id": "swindon",
       "player2Id": "wnareik",
       "played": false
     }
