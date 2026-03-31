@@ -2,12 +2,15 @@
   import { onMount } from 'svelte';
   import { leagueStore } from './stores/leagueStore.js';
   import Header from './components/Header.svelte';
+  import TabContainer from './components/TabContainer.svelte';
   import LeagueStandings from './components/LeagueStandings.svelte';
+  import FixturesGrid from './components/FixturesGrid.svelte';
   import './styles/global.css';
 
   let leagueData;
   let isLoading = true;
   let hasError = false;
+  let activeTab = 'standings';
 
   onMount(() => {
     leagueStore.load();
@@ -18,6 +21,10 @@
     isLoading = data.loading;
     hasError = data.error !== null;
   });
+
+  function handleTabChange(tab) {
+    activeTab = tab;
+  }
 </script>
 
 <main>
@@ -31,7 +38,13 @@
     </div>
   {:else}
     <Header league={leagueData.league} />
-    <LeagueStandings players={leagueData.players} />
+    <TabContainer {activeTab} onChange={handleTabChange}>
+      {#if activeTab === 'standings'}
+        <LeagueStandings players={leagueData.players} />
+      {:else if activeTab === 'fixtures'}
+        <FixturesGrid players={leagueData.players} matches={leagueData.matches} />
+      {/if}
+    </TabContainer>
   {/if}
 </main>
 
@@ -59,3 +72,4 @@
     color: #f44336;
   }
 </style>
+

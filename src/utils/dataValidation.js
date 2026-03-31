@@ -2,12 +2,13 @@
  * Data validation utilities
  */
 
-export function validateLeagueData(data) {
+export function validateFixturesData(data) {
   const errors = [];
 
   // Check root structure
   if (!data.league) errors.push("Missing 'league' object");
   if (!Array.isArray(data.players)) errors.push("'players' must be an array");
+  if (!Array.isArray(data.matches)) errors.push("'matches' must be an array");
 
   // Validate league metadata
   if (data.league) {
@@ -24,15 +25,22 @@ export function validateLeagueData(data) {
       if (!player.id) errors.push(`${prefix}: missing 'id'`);
       if (!player.name) errors.push(`${prefix}: missing 'name'`);
       if (!player.army) errors.push(`${prefix}: missing 'army'`);
-      if (typeof player.wins !== "number") errors.push(`${prefix}: 'wins' must be a number`);
-      if (typeof player.draws !== "number") errors.push(`${prefix}: 'draws' must be a number`);
-      if (typeof player.losses !== "number") errors.push(`${prefix}: 'losses' must be a number`);
-      if (typeof player.victoryPointsFor !== "number")
-        errors.push(`${prefix}: 'victoryPointsFor' must be a number`);
-      if (typeof player.victoryPointsAgainst !== "number")
-        errors.push(`${prefix}: 'victoryPointsAgainst' must be a number`);
-      if (typeof player.totalTournamentPoints !== "number")
-        errors.push(`${prefix}: 'totalTournamentPoints' must be a number`);
+    });
+  }
+
+  // Validate each match
+  if (Array.isArray(data.matches)) {
+    data.matches.forEach((match, index) => {
+      const prefix = `Match[${index}]`;
+
+      if (!match.id) errors.push(`${prefix}: missing 'id'`);
+      if (!match.player1Id) errors.push(`${prefix}: missing 'player1Id'`);
+      if (!match.player2Id) errors.push(`${prefix}: missing 'player2Id'`);
+      if (typeof match.played !== "boolean") errors.push(`${prefix}: 'played' must be a boolean`);
+      if (match.played) {
+        if (typeof match.player1VP !== "number") errors.push(`${prefix}: 'player1VP' must be a number`);
+        if (typeof match.player2VP !== "number") errors.push(`${prefix}: 'player2VP' must be a number`);
+      }
     });
   }
 
@@ -41,3 +49,4 @@ export function validateLeagueData(data) {
     errors
   };
 }
+

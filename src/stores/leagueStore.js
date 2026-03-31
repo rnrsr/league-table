@@ -1,29 +1,35 @@
 import { writable } from 'svelte/store';
-import { validateLeagueData } from '../utils/dataValidation.js';
+import { validateFixturesData } from '../utils/dataValidation.js';
+import { derivePlayerStats } from '../utils/fixtures.js';
 
 function createLeagueStore() {
   const { subscribe, set } = writable({
     league: null,
     players: [],
+    matches: [],
     loading: true,
     error: null
   });
 
-  async function loadLeague() {
+  async function load() {
     try {
-      const response = await fetch('/data/league.json');
-      if (!response.ok) throw new Error(`Failed to load league data: ${response.status}`);
+      const response = await fetch('/data/fixtures.json');
+      if (!response.ok) throw new Error(`Failed to load fixtures data: ${response.status}`);
 
       const data = await response.json();
-      const validation = validateLeagueData(data);
+      const validation = validateFixturesData(data);
 
       if (!validation.isValid) {
-        throw new Error(`Invalid league data: ${validation.errors.join(', ')}`);
+        throw new Error(`Invalid fixtures data: ${validation.errors.join(', ')}`);
       }
+
+      // Derive player standings from matches
+      const derivedPlayers = derivePlayerStats(data.players, data.matches);
 
       set({
         league: data.league,
-        players: data.players,
+        players: derivedPlayers,
+        matches: data.matches,
         loading: false,
         error: null
       });
@@ -31,6 +37,7 @@ function createLeagueStore() {
       set({
         league: null,
         players: [],
+        matches: [],
         loading: false,
         error: err.message
       });
@@ -39,7 +46,7 @@ function createLeagueStore() {
 
   return {
     subscribe,
-    load: loadLeague
+    load
   };
 }
 
