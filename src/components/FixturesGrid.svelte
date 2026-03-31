@@ -158,18 +158,18 @@
   }
 
   .match-result.win {
-    background-color: rgba(76, 175, 80, 0.15);
-    border-color: rgba(76, 175, 80, 0.5);
+    background-color: rgba(139, 69, 19, 0.25);
+    border-color: var(--color-accent);
   }
 
   .match-result.loss {
-    background-color: rgba(244, 67, 54, 0.15);
-    border-color: rgba(244, 67, 54, 0.5);
+    background-color: rgba(92, 46, 15, 0.3);
+    border-color: rgba(45, 24, 16, 0.5);
   }
 
   .match-result.draw {
-    background-color: rgba(255, 193, 7, 0.15);
-    border-color: rgba(255, 193, 7, 0.5);
+    background-color: rgba(107, 84, 71, 0.25);
+    border-color: rgba(107, 84, 71, 0.5);
   }
 
   .vp {

@@ -45,8 +45,6 @@
     padding: var(--spacing-md) var(--spacing-lg);
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: var(--font-display);
-    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
     border-bottom: 3px solid transparent;

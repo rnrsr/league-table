@@ -15,7 +15,7 @@
         <tr>
           <th class="rank">Rank</th>
           <th class="name">Player</th>
-          <th class="record">Record</th>
+          <th class="record">Record W/D/L</th>
           <th class="points vpf">VP For</th>
           <th class="points vpa">VP Against</th>
           <th class="points vpd">VP Diff</th>
@@ -87,6 +87,7 @@
     font-size: 0.95rem;
     text-transform: uppercase;
     letter-spacing: 1px;
+    vertical-align: top;
   }
 
   tbody tr {
@@ -107,6 +108,7 @@
   td {
     padding: var(--spacing-md);
     text-align: left;
+    vertical-align: top;
   }
 
   .rank {
@@ -135,7 +137,6 @@
   .record {
     display: flex;
     gap: var(--spacing-xs);
-    font-family: monospace;
   }
 
   .stat {
@@ -149,18 +150,21 @@
   }
 
   .stat.win {
-    background-color: rgba(76, 175, 80, 0.2);
-    color: #4caf50;
+    background-color: rgba(139, 69, 19, 0.25);
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
   }
 
   .stat.draw {
-    background-color: rgba(255, 193, 7, 0.2);
-    color: #ffc107;
+    background-color: rgba(107, 84, 71, 0.25);
+    color: var(--color-text);
+    border: 1px solid rgba(107, 84, 71, 0.5);
   }
 
   .stat.loss {
-    background-color: rgba(244, 67, 54, 0.2);
-    color: #f44336;
+    background-color: rgba(92, 46, 15, 0.3);
+    color: var(--color-light);
+    border: 1px solid rgba(45, 24, 16, 0.5);
   }
 
   .points {
