@@ -16,11 +16,6 @@
       "army": "Vampire Counts"
     },
     {
-      "id": "phil",
-      "name": "Phil",
-      "army": "Grand Cathay"
-    },
-    {
       "id": "james",
       "name": "James",
       "army": "Minotour Herd"
@@ -54,12 +49,6 @@
       "played": true
     },
     {
-      "id": "match_003",
-      "player1Id": "rich",
-      "player2Id": "phil",
-      "played": false
-    },
-    {
       "id": "match_004",
       "player1Id": "rich",
       "player2Id": "swindon",
@@ -69,12 +58,6 @@
       "id": "match_005",
       "player1Id": "rich",
       "player2Id": "wnareik",
-      "played": false
-    },
-    {
-      "id": "match_006",
-      "player1Id": "hector",
-      "player2Id": "phil",
       "played": false
     },
     {
@@ -93,25 +76,9 @@
       "id": "match_009",
       "player1Id": "hector",
       "player2Id": "wnareik",
-      "played": false
-    },
-    {
-      "id": "match_010",
-      "player1Id": "phil",
-      "player2Id": "james",
-      "played": false
-    },
-    {
-      "id": "match_011",
-      "player1Id": "phil",
-      "player2Id": "swindon",
-      "played": false
-    },
-    {
-      "id": "match_012",
-      "player1Id": "phil",
-      "player2Id": "wnareik",
-      "played": false
+      "player1VP": 900,
+      "player2VP": 1100,
+      "played": true
     },
     {
       "id": "match_013",
