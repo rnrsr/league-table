@@ -2,6 +2,21 @@
  * Fixture and standings calculation utilities
  */
 
+const scenarios = [
+  "Upon the Field of Glory",
+  "King of the Hill",
+  "Drawn Battle Lines",
+  "Close Quarters",
+  "A Chance Encounter",
+  "Encirclement"
+];
+
+export function getScenarioName(scenarioNum) {
+  if (!scenarioNum) return null;
+  const idx = parseInt(scenarioNum) - 1;
+  return scenarios[idx] || null;
+}
+
 export function calculateTournamentPoints(vpDiff) {
   // Determine TP based on VP differential
   const absDiff = Math.abs(vpDiff);
@@ -15,6 +30,15 @@ export function calculateTournamentPoints(vpDiff) {
   } else {
     return { tp: vpDiff > 0 ? 6 : 0, result: vpDiff > 0 ? 'win' : 'loss' };
   }
+}
+
+export function getWinLevel(vpDiff) {
+  const absDiff = Math.abs(vpDiff);
+
+  if (absDiff <= 300) return 'Draw';
+  if (absDiff <= 750) return 'Marginal Victory';
+  if (absDiff <= 1400) return 'Resounding Victory';
+  return 'Crushing Victory';
 }
 
 export function derivePlayerStats(players, matches) {
@@ -101,7 +125,8 @@ export function getMatchMatrix(players, matches) {
       player2TP: p2Result.tp,
       player1Result: p1Result.result,
       player2Result: p2Result.result,
-      vpDiff: vpDiff
+      vpDiff: vpDiff,
+      scenario: getScenarioName(match.scenario)
     };
 
     matrix[match.player2Id][match.player1Id] = {
@@ -111,7 +136,8 @@ export function getMatchMatrix(players, matches) {
       player2TP: p1Result.tp,
       player1Result: p2Result.result,
       player2Result: p1Result.result,
-      vpDiff: -vpDiff
+      vpDiff: -vpDiff,
+      scenario: getScenarioName(match.scenario)
     };
   });
 

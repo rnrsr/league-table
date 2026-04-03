@@ -1,5 +1,5 @@
 <script>
-  import { getMatchMatrix } from '../utils/fixtures.js';
+  import { getMatchMatrix, getWinLevel } from '../utils/fixtures.js';
 
   export let players = [];
   export let matches = [];
@@ -8,6 +8,28 @@
 
   $: matchMatrix = getMatchMatrix(players, matches);
 
+  $: playerMap = players.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+
+  $: playedMatches = matches
+    .filter(m => m.played)
+    .map(m => {
+      const p1 = playerMap[m.player1Id];
+      const p2 = playerMap[m.player2Id];
+      const matrixMatch = matchMatrix[m.player1Id]?.[m.player2Id];
+      const p1Wins = m.player1VP > m.player2VP;
+      const p2Wins = m.player2VP > m.player1VP;
+      const vpDiff = Math.abs(m.player1VP - m.player2VP);
+      return {
+        highPlayer: p1Wins ? (p1?.name || m.player1Id) : (p2?.name || m.player2Id),
+        lowPlayer: p1Wins ? (p2?.name || m.player2Id) : (p1?.name || m.player1Id),
+        highVP: Math.max(m.player1VP, m.player2VP),
+        lowVP: Math.min(m.player1VP, m.player2VP),
+        scenario: matrixMatch?.scenario,
+        result: p1Wins ? matrixMatch?.player1Result : (p2Wins ? matrixMatch?.player2Result : 'draw'),
+        winner: p1Wins ? (p1?.name || m.player1Id) : (p2Wins ? (p2?.name || m.player2Id) : null),
+        winLevel: getWinLevel(m.player1VP - m.player2VP)
+      };
+    });
 </script>
 
 <div class="fixtures-container">
@@ -50,6 +72,26 @@
       </tbody>
     </table>
   </div>
+
+  {#if playedMatches.length > 0}
+    <div class="played-matches">
+      <h3>Played Fixtures</h3>
+      <ul class="match-list">
+        {#each playedMatches as match}
+          <li class="match-item" class:win={match.result === 'win'} class:loss={match.result === 'loss'} class:draw={match.result === 'draw'}>
+            <span class="players">{match.highPlayer} {match.highVP} - {match.lowVP} {match.lowPlayer}</span>
+            {#if match.scenario}
+              <span class="match-scenario">({match.scenario})</span>
+            {/if}
+            <span class="result">
+              {#if match.result === 'win'}{match.winner} - {match.winLevel}
+              {:else if match.result === 'draw'}Draw{/if}
+            </span>
+          </li>
+        {/each}
+      </ul>
+    </div>
+  {/if}
 
   {#if players.length === 0}
     <div class="no-data">
@@ -101,7 +143,7 @@
   th.opponent-header {
     writing-mode: horizontal-tb;
     text-orientation: unset;
-    width: 100px;
+    width: 120px;
     font-size: 0.85rem;
   }
 
@@ -117,7 +159,8 @@
     padding: var(--spacing-sm);
     border-right: 1px solid var(--color-border);
     text-align: center;
-    min-width: 80px;
+    width: 120px;
+    min-width: 120px;
     height: 80px;
   }
 
@@ -128,7 +171,7 @@
     color: var(--color-text);
     text-align: left;
     vertical-align: middle;
-    writing-mode: horizontal-tb;
+    width: 120px;
     min-width: 120px;
     height: auto;
   }
@@ -189,6 +232,66 @@
     color: var(--color-text-secondary);
   }
 
+  .played-matches {
+    margin-top: var(--spacing-xl);
+  }
+
+  .played-matches h3 {
+    color: var(--color-accent);
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .match-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .match-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  .match-item.win {
+    border-left: 3px solid var(--color-accent);
+  }
+
+  .match-item.loss {
+    border-left: 3px solid rgba(45, 24, 16, 0.5);
+  }
+
+  .match-item.draw {
+    border-left: 3px solid rgba(107, 84, 71, 0.5);
+  }
+
+  .players {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .match-scenario {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+  }
+
+  .result {
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--color-accent);
+    font-size: 0.9rem;
+  }
+
   @media (max-width: 768px) {
     .fixtures-container {
       padding: var(--spacing-sm);
@@ -201,12 +304,18 @@
     }
 
     td {
-      min-width: 60px;
+      width: 80px;
+      min-width: 80px;
       height: 60px;
     }
 
     td.player-header {
+      width: 80px;
       min-width: 80px;
+    }
+
+    th.opponent-header {
+      width: 80px;
     }
 
     .vp {

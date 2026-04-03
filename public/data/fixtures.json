@@ -38,7 +38,8 @@
       "player2Id": "hector",
       "player1VP": 1900,
       "player2VP": 639,
-      "played": true
+      "played": true,
+      "scenario": "5"
     },
     {
       "id": "match_002",
@@ -46,7 +47,8 @@
       "player2Id": "james",
       "player1VP": 755,
       "player2VP": 470,
-      "played": true
+      "played": true,
+      "scenario": "4"
     },
     {
       "id": "match_004",
@@ -78,7 +80,8 @@
       "player2Id": "wnareik",
       "player1VP": 900,
       "player2VP": 1100,
-      "played": true
+      "played": true,
+      "scenario": "3"
     },
     {
       "id": "match_013",
