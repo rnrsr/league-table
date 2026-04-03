@@ -2,6 +2,8 @@
 
 A single-page application for displaying Warhammer fantasy league standings. Built with Svelte and Vite, styled with a parchment aesthetic and medieval typography.
 
+**Live**: https://tow.rnrsr.dev
+
 ## Features
 
 - 📊 **Standings Tab** - Dynamic league table ranked by Tournament Points
@@ -41,13 +43,7 @@ Opens dev server at `http://localhost:5173` with hot reload.
 npm run build
 ```
 
-Creates optimized build in `dist/` folder. Deploy this folder to any static hosting.
-
-### Deployment
-
-- **GitHub Pages**: Push `dist/` folder or set up GitHub Actions
-- **Netlify**: Connect repo, set build command to `npm run build`
-- **Vercel**: Connect repo, auto-deploys on push
+Creates optimized build in `dist/` folder.
 
 ## Data Management
 
