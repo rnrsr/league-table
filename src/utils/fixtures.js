@@ -119,6 +119,7 @@ export function getMatchMatrix(players, matches) {
     const p2Result = calculateTournamentPoints(-vpDiff);
 
     matrix[match.player1Id][match.player2Id] = {
+      matchId: match.id,
       player1VP: match.player1VP,
       player2VP: match.player2VP,
       player1TP: p1Result.tp,
@@ -130,6 +131,7 @@ export function getMatchMatrix(players, matches) {
     };
 
     matrix[match.player2Id][match.player1Id] = {
+      matchId: match.id,
       player1VP: match.player2VP,
       player2VP: match.player1VP,
       player1TP: p2Result.tp,
@@ -142,4 +144,15 @@ export function getMatchMatrix(players, matches) {
   });
 
   return matrix;
+}
+
+export function getGameImages(matchId) {
+  const images = [];
+  const basePath = '/images/games/';
+  
+  for (let i = 1; i <= 10; i++) {
+    images.push(`${basePath}${matchId}_${i}.jpg`);
+  }
+  
+  return images;
 }

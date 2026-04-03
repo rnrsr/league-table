@@ -1,14 +1,39 @@
 <script>
-  import { getMatchMatrix, getWinLevel } from '../utils/fixtures.js';
+  import { getMatchMatrix, getWinLevel, getGameImages } from '../utils/fixtures.js';
 
   export let players = [];
   export let matches = [];
 
   let matchMatrix = {};
+  let hoveredMatch = null;
+  let selectedMatch = null;
+  let currentImageIndex = 0;
 
   $: matchMatrix = getMatchMatrix(players, matches);
 
   $: playerMap = players.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+
+  async function checkImageExists(url) {
+    try {
+      const res = await fetch(url, { method: 'HEAD' });
+      if (!res.ok) return false;
+      const contentType = res.headers.get('content-type');
+      return contentType && contentType.startsWith('image/');
+    } catch {
+      return false;
+    }
+  }
+
+  async function getAvailableImages(matchId) {
+    const urls = getGameImages(matchId);
+    const available = [];
+    for (const url of urls) {
+      if (await checkImageExists(url)) {
+        available.push(url);
+      }
+    }
+    return available;
+  }
 
   $: playedMatches = matches
     .filter(m => m.played)
@@ -20,6 +45,7 @@
       const p2Wins = m.player2VP > m.player1VP;
       const vpDiff = Math.abs(m.player1VP - m.player2VP);
       return {
+        matchId: m.id,
         highPlayer: p1Wins ? (p1?.name || m.player1Id) : (p2?.name || m.player2Id),
         lowPlayer: p1Wins ? (p2?.name || m.player2Id) : (p1?.name || m.player1Id),
         highVP: Math.max(m.player1VP, m.player2VP),
@@ -27,10 +53,56 @@
         scenario: matrixMatch?.scenario,
         result: p1Wins ? matrixMatch?.player1Result : (p2Wins ? matrixMatch?.player2Result : 'draw'),
         winner: p1Wins ? (p1?.name || m.player1Id) : (p2Wins ? (p2?.name || m.player2Id) : null),
-        winLevel: getWinLevel(m.player1VP - m.player2VP)
+        winLevel: getWinLevel(m.player1VP - m.player2VP),
+        imageUrls: getGameImages(m.id)
       };
     });
+
+  function handleMouseEnter(matchId) {
+    hoveredMatch = matchId;
+  }
+
+  function handleMouseLeave() {
+    hoveredMatch = null;
+  }
+
+  async function openModal(matchId) {
+    const match = playedMatches.find(m => m.matchId === matchId);
+    if (match) {
+      const available = await getAvailableImages(matchId);
+      if (available.length > 0) {
+        selectedMatch = { ...match, availableImages: available };
+        currentImageIndex = 0;
+      }
+    }
+  }
+
+  function closeModal() {
+    selectedMatch = null;
+    currentImageIndex = 0;
+  }
+
+  function prevImage() {
+    if (selectedMatch) {
+      currentImageIndex = (currentImageIndex - 1 + selectedMatch.availableImages.length) % selectedMatch.availableImages.length;
+    }
+  }
+
+  function nextImage() {
+    if (selectedMatch) {
+      currentImageIndex = (currentImageIndex + 1) % selectedMatch.availableImages.length;
+    }
+  }
+
+  function handleKeydown(e) {
+    if (!selectedMatch) return;
+    if (e.key === 'Escape') closeModal();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'ArrowRight') nextImage();
+  }
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <div class="fixtures-container">
   <div class="matrix-wrapper">
@@ -60,9 +132,22 @@
                     class:win={match.player1Result === 'win'}
                     class:loss={match.player1Result === 'loss'}
                     class:draw={match.player1Result === 'draw'}
+                    class:hovered={hoveredMatch === match.matchId}
+                    on:mouseenter={() => handleMouseEnter(match.matchId)}
+                    on:mouseleave={handleMouseLeave}
+                    on:click={() => openModal(match.matchId)}
+                    role="button"
+                    tabindex="0"
                   >
                     <span class="vp">{match.player1VP}-{match.player2VP}</span>
                     <span class="tp">({match.player1TP})</span>
+                    <button class="image-icon" aria-label="View game photos">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                      </svg>
+                    </button>
                   </div>
                 {/if}
               </td>
@@ -78,7 +163,18 @@
       <h3>Played Fixtures</h3>
       <ul class="match-list">
         {#each playedMatches as match}
-          <li class="match-item" class:win={match.result === 'win'} class:loss={match.result === 'loss'} class:draw={match.result === 'draw'}>
+          <li 
+            class="match-item" 
+            class:win={match.result === 'win'} 
+            class:loss={match.result === 'loss'} 
+            class:draw={match.result === 'draw'}
+            class:hovered={hoveredMatch === match.matchId}
+            on:mouseenter={() => handleMouseEnter(match.matchId)}
+            on:mouseleave={handleMouseLeave}
+            on:click={() => openModal(match.matchId)}
+            role="button"
+            tabindex="0"
+          >
             <span class="players">{match.highPlayer} {match.highVP} - {match.lowVP} {match.lowPlayer}</span>
             {#if match.scenario}
               <span class="match-scenario">({match.scenario})</span>
@@ -87,6 +183,13 @@
               {#if match.result === 'win'}{match.winner} - {match.winLevel}
               {:else if match.result === 'draw'}Draw{/if}
             </span>
+            <button class="image-icon-small" aria-label="View game photos">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </button>
           </li>
         {/each}
       </ul>
@@ -96,6 +199,42 @@
   {#if players.length === 0}
     <div class="no-data">
       <p>No fixture data available</p>
+    </div>
+  {/if}
+
+  {#if selectedMatch}
+    <div class="modal-overlay" on:click={closeModal} role="dialog" aria-modal="true">
+      <div class="modal-content" on:click|stopPropagation role="document">
+        <button class="modal-close" on:click={closeModal} aria-label="Close">&times;</button>
+        
+        {#if selectedMatch.availableImages.length > 1}
+          <button class="carousel-btn prev" on:click={prevImage} aria-label="Previous image">&#10094;</button>
+        {/if}
+        
+        <img 
+          src={selectedMatch.availableImages[currentImageIndex]} 
+          alt="Game photo {currentImageIndex + 1} of {selectedMatch.matchId}"
+          class="modal-image"
+        />
+        
+        {#if selectedMatch.availableImages.length > 1}
+          <button class="carousel-btn next" on:click={nextImage} aria-label="Next image">&#10095;</button>
+        {/if}
+        
+        {#if selectedMatch.availableImages.length > 1}
+          <div class="carousel-dots">
+            {#each selectedMatch.availableImages as _, i}
+              <span 
+                class="dot" 
+                class:active={i === currentImageIndex}
+                on:click={() => currentImageIndex = i}
+                role="button"
+                tabindex="0"
+              ></span>
+            {/each}
+          </div>
+        {/if}
+      </div>
     </div>
   {/if}
 </div>
@@ -215,6 +354,12 @@
     border-color: rgba(107, 84, 71, 0.5);
   }
 
+  .match-result.hovered {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+    box-shadow: 0 0 8px rgba(139, 69, 19, 0.4);
+  }
+
   .vp {
     font-weight: 700;
     color: var(--color-text);
@@ -224,6 +369,27 @@
   .tp {
     font-size: 0.75rem;
     color: var(--color-text-secondary);
+  }
+
+  .image-icon {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    padding: 2px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+
+  .image-icon:hover {
+    opacity: 1;
+  }
+
+  .match-result {
+    position: relative;
   }
 
   .no-data {
@@ -274,6 +440,12 @@
     border-left: 3px solid rgba(107, 84, 71, 0.5);
   }
 
+  .match-item.hovered {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 8px rgba(139, 69, 19, 0.4);
+  }
+
   .players {
     font-weight: 600;
     color: var(--color-text);
@@ -290,6 +462,113 @@
     font-weight: 600;
     color: var(--color-accent);
     font-size: 0.9rem;
+  }
+
+  .image-icon-small {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    padding: 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+  }
+
+  .image-icon-small:hover {
+    opacity: 1;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .modal-image {
+    max-width: 90vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .carousel-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  .carousel-btn.prev {
+    left: -60px;
+  }
+
+  .carousel-btn.next {
+    right: -60px;
+  }
+
+  .carousel-dots {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .dot.active {
+    background: white;
+  }
+
+  .dot:hover {
+    background: rgba(255, 255, 255, 0.7);
   }
 
   @media (max-width: 768px) {
