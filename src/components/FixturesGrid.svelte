@@ -127,28 +127,34 @@
               >
                 {#if rowPlayer.id !== colPlayer.id && matchMatrix[rowPlayer.id] && matchMatrix[rowPlayer.id][colPlayer.id]}
                   {@const match = matchMatrix[rowPlayer.id][colPlayer.id]}
-                  <div
-                    class="match-result"
-                    class:win={match.player1Result === 'win'}
-                    class:loss={match.player1Result === 'loss'}
-                    class:draw={match.player1Result === 'draw'}
-                    class:hovered={hoveredMatch === match.matchId}
-                    on:mouseenter={() => handleMouseEnter(match.matchId)}
-                    on:mouseleave={handleMouseLeave}
-                    on:click={() => openModal(match.matchId)}
-                    role="button"
-                    tabindex="0"
-                  >
-                    <span class="vp">{match.player1VP}-{match.player2VP}</span>
-                    <span class="tp">({match.player1TP})</span>
-                    <button class="image-icon" aria-label="View game photos">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                      </svg>
-                    </button>
-                  </div>
+                   <div
+                     class="match-result"
+                     class:win={match.player1Result === 'win'}
+                     class:loss={match.player1Result === 'loss'}
+                     class:draw={match.player1Result === 'draw'}
+                     class:hovered={hoveredMatch === match.matchId}
+                     on:mouseenter={() => handleMouseEnter(match.matchId)}
+                     on:mouseleave={handleMouseLeave}
+                     role="button"
+                     tabindex="0"
+                     on:click={() => openModal(match.matchId)}
+                     on:keydown={(e) => {
+                       if (e.key === 'Enter' || e.key === ' ') {
+                         e.preventDefault();
+                         openModal(match.matchId);
+                       }
+                     }}
+                   >
+                     <span class="vp">{match.player1VP}-{match.player2VP}</span>
+                     <span class="tp">({match.player1TP})</span>
+                     <button class="image-icon" aria-label="View game photos" on:click|stopPropagation={() => openModal(match.matchId)}>
+                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                         <polyline points="21 15 16 10 5 21"></polyline>
+                       </svg>
+                      </button>
+                    </div>
                 {/if}
               </td>
             {/each}
@@ -163,18 +169,15 @@
       <h3>Played Fixtures</h3>
       <ul class="match-list">
         {#each playedMatches as match}
-          <li 
-            class="match-item" 
-            class:win={match.result === 'win'} 
-            class:loss={match.result === 'loss'} 
-            class:draw={match.result === 'draw'}
-            class:hovered={hoveredMatch === match.matchId}
-            on:mouseenter={() => handleMouseEnter(match.matchId)}
-            on:mouseleave={handleMouseLeave}
-            on:click={() => openModal(match.matchId)}
-            role="button"
-            tabindex="0"
-          >
+           <li 
+             class="match-item" 
+             class:win={match.result === 'win'} 
+             class:loss={match.result === 'loss'} 
+             class:draw={match.result === 'draw'}
+             class:hovered={hoveredMatch === match.matchId}
+             on:mouseenter={() => handleMouseEnter(match.matchId)}
+             on:mouseleave={handleMouseLeave}
+           >
             <span class="players">{match.highPlayer} {match.highVP} - {match.lowVP} {match.lowPlayer}</span>
             {#if match.scenario}
               <span class="match-scenario">({match.scenario})</span>
@@ -183,7 +186,7 @@
               {#if match.result === 'win'}{match.winner} - {match.winLevel}
               {:else if match.result === 'draw'}Draw{/if}
             </span>
-            <button class="image-icon-small" aria-label="View game photos">
+             <button class="image-icon-small" aria-label="View game photos" on:click={() => openModal(match.matchId)}>
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -202,9 +205,11 @@
     </div>
   {/if}
 
-  {#if selectedMatch}
-    <div class="modal-overlay" on:click={closeModal} role="dialog" aria-modal="true">
-      <div class="modal-content" on:click|stopPropagation role="document">
+   {#if selectedMatch}
+     <div class="modal-overlay" on:click={closeModal} on:keydown={(e) => {
+       if (e.key === 'Escape') closeModal();
+     }} role="dialog" aria-modal="true" tabindex="-1">
+       <div class="modal-content" on:click|stopPropagation role="presentation">
         <button class="modal-close" on:click={closeModal} aria-label="Close">&times;</button>
         
         {#if selectedMatch.availableImages.length > 1}
@@ -223,15 +228,15 @@
         
         {#if selectedMatch.availableImages.length > 1}
           <div class="carousel-dots">
-            {#each selectedMatch.availableImages as _, i}
-              <span 
-                class="dot" 
-                class:active={i === currentImageIndex}
-                on:click={() => currentImageIndex = i}
-                role="button"
-                tabindex="0"
-              ></span>
-            {/each}
+           {#each selectedMatch.availableImages as _, i}
+               <button
+                 type="button"
+                 class="dot" 
+                 class:active={i === currentImageIndex}
+                 on:click={() => currentImageIndex = i}
+                 aria-label="Go to image {i + 1}"
+               ></button>
+             {/each}
           </div>
         {/if}
       </div>
@@ -337,6 +342,10 @@
     padding: var(--spacing-sm);
     border: 1px solid var(--color-border);
     background-color: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
   }
 
   .match-result.win {
@@ -426,6 +435,7 @@
     border-radius: var(--radius-sm);
     margin-bottom: var(--spacing-sm);
     flex-wrap: wrap;
+    cursor: pointer;
   }
 
   .match-item.win {
